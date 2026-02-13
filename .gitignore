@@ -1,0 +1,61 @@
+# Data files
+Outcome_Data/
+Outcome_Data_Replicated/
+Raw_Sensor_Data/
+
+# Excel files with participant data
+*.xlsx
+!**/requirements.xlsx
+
+# Participant data
+Participant HeightWeight.xlsx
+DASS 21-ASRF*.xlsx
+Balance Study*.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Analysis outputs (keep scripts, ignore generated files)
+*.png
+*.pdf
+*.docx
+*.csv
+!**/requirements*.csv
+
+# Temporary files
+_write_test.txt
+*.tmp
+*.log
+
+# MATLAB
+*.asv
+*.m~
+
+# Submodules (if not using git submodule)
+sincmotion-matlab/

@@ -1,0 +1,170 @@
+@startuml pipeline_diagram
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam RoundCorner 10
+skinparam ArrowThickness 2
+
+skinparam rectangle {
+  BackgroundColor<<original>> #E8F4FD
+  BorderColor<<original>> #2196F3
+  BackgroundColor<<gnb>> #FFF3E0
+  BorderColor<<gnb>> #FF9800
+  BackgroundColor<<streamlined>> #E8F5E9
+  BorderColor<<streamlined>> #4CAF50
+  BackgroundColor<<data>> #F3E5F5
+  BorderColor<<data>> #9C27B0
+  BackgroundColor<<output>> #FCE4EC
+  BorderColor<<output>> #E91E63
+}
+
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #FBC02D
+}
+
+title <b>GB_ASRF Pipeline Architecture</b>\nStreamlined Access to Validated SincMotion Pipeline
+header Published & Validated SincMotion Library (unchanged) + Streamlined Wrapper
+
+legend top left
+  |<#E8F4FD>  | **sincmotion-matlab/core/** — Original validated algorithms (unchanged) |
+  |<#FFF3E0>  | **sincmotion-matlab/gaitandbalance/** — Original GnB wrappers (unchanged) |
+  |<#E8F5E9>  | **Pipeline_Streamlined/** — New streamlined entry point |
+  |<#F3E5F5>  | Data inputs |
+  |<#FCE4EC>  | Outputs |
+end legend
+
+' ===== STREAMLINED ENTRY POINT =====
+rectangle "**Streamlined Pipeline**\n//Pipeline_Streamlined/run_gb_pipeline.m//" <<streamlined>> as ENTRY {
+  rectangle "**Automated File Discovery**\nScans Raw_Sensor_Data/ folder\nRegex metadata extraction from filenames\n//Name, Test Set, Date, Task Type//" <<streamlined>> as DISCOVER
+  rectangle "**Participant Height Lookup**\nAuto-loads from Excel\nor uses population defaults" <<streamlined>> as HEIGHT
+  rectangle "**Task Router**\nRoutes to Gait or Static\nbased on filename task type" <<streamlined>> as ROUTER
+  rectangle "**Per-Participant Aggregation**\nGroups results by participant\nSorts by date & test order\nWrites individual outcome CSVs" <<streamlined>> as AGGREGATE
+}
+
+' ===== DATA INPUTS =====
+rectangle "**Raw CSV Sensor Files**\n//Raw_Sensor_Data/*.csv//\nTimestamp, Accel XYZ,\nGyro XYZ, Quat WXYZ" <<data>> as RAWDATA
+rectangle "**Participant Heights**\n//Participant HeightWeight.xlsx//" <<data>> as HEIGHTS
+
+' ===== GNB WRAPPERS (ORIGINAL, UNCHANGED) =====
+rectangle "**Original GnB Wrappers** (validated, unchanged)\n//sincmotion-matlab/gaitandbalance//" <<gnb>> as GNBLAYER {
+
+  rectangle "**loadGnBExportedFile()**\nParses GnB app CSV format\nExtracts sensor streams" <<gnb>> as LOAD
+
+  rectangle "**estimateGnBGaitOutcomes()**\nOrchestrates full gait analysis\nAggregates across 4 walking laps" <<gnb>> as GAIT_GNB {
+    rectangle "segmentGnBGaitStream()\nSplits walk into 4 laps" <<gnb>> as SEGMENT
+    rectangle "preprocessGnBGaitSegment()\nUnit conversion (g -> m/s2)\n+ frame correction" <<gnb>> as PREPROCESS_G
+    rectangle "applyGnBFrameCorrection()\nQuaternion-based device\norientation correction" <<gnb>> as FRAMECORR_G
+  }
+
+  rectangle "**estimateGnBStaticOutcomes()**\nOrchestrates balance analysis" <<gnb>> as STATIC_GNB {
+    rectangle "preprocessGnBStaticStream()\nUnit conversion + filtering\n+ frame correction" <<gnb>> as PREPROCESS_S
+    rectangle "applyGnBFrameCorrection()" <<gnb>> as FRAMECORR_S
+  }
+}
+
+' ===== CORE ALGORITHMS (ORIGINAL, UNCHANGED) =====
+rectangle "**Original Core Algorithms** (published & validated, unchanged)\n//sincmotion-matlab/core//" <<original>> as CORELAYER {
+
+  rectangle "**estimateGaitOutcomes()**\nMaster gait outcome\ncalculation" <<original>> as GAIT_CORE
+
+  rectangle "estimateGaitSymIndex()\nAutocorrelation-based\nsymmetry index" <<original>> as SYM
+
+  rectangle "estimateFootEvents()\nWavelet-based foot\ncontact detection" <<original>> as FOOT
+
+  rectangle "estimateStepLengths()\nInverted pendulum model\nstep length estimation" <<original>> as STEP
+
+  rectangle "estimatePosturalStability()\nLog-transformed mean\nacceleration magnitude" <<original>> as STABILITY
+
+  rectangle "**Signal Processing**" <<original>> as SIGNAL {
+    rectangle "filterStream()\nButterworth\nband-pass filter" <<original>> as FILTER
+    rectangle "lowPassStream()\nLow-pass\nfilter" <<original>> as LOWPASS
+    rectangle "diff_cwtft()\nMEX wavelet\nderivative" <<original>> as CWT
+    rectangle "acf()\nAuto-\ncorrelation" <<original>> as ACF
+  }
+}
+
+' ===== OUTPUT =====
+rectangle "**Outcome CSV Files**\n//Outcome_Data_Replicated///\nOne file per participant\n\nGait: Walking balance, Step length,\nStep time, Variability, Asymmetry,\nWalking speed\n\nStatic: Stability (Resultant, ML, AP)" <<output>> as OUTPUT
+
+' ===== CONNECTIONS =====
+' Data inputs
+RAWDATA -down-> DISCOVER
+HEIGHTS -down-> HEIGHT
+
+' Streamlined flow
+DISCOVER -down-> ROUTER
+HEIGHT -right-> ROUTER
+
+' Router to GnB layer
+ROUTER -down-> LOAD : "Load raw data"
+LOAD -down-> GAIT_GNB : "Walk tasks"
+LOAD -down-> STATIC_GNB : "Static tasks"
+
+' Gait GnB internal
+SEGMENT -down-> PREPROCESS_G
+PREPROCESS_G -down-> FRAMECORR_G
+
+' Static GnB internal
+PREPROCESS_S -down-> FRAMECORR_S
+
+' GnB to Core
+GAIT_GNB -down-> GAIT_CORE : "Preprocessed\nsensor data\n(per lap)"
+STATIC_GNB -down-> STABILITY : "Filtered\naccel data"
+
+' Core gait internal
+GAIT_CORE -down-> SYM
+GAIT_CORE -down-> FOOT
+GAIT_CORE -down-> STEP
+
+' Signal processing connections
+SYM -down-> ACF
+SYM -down-> CWT
+FOOT -down-> CWT
+FOOT -down-> LOWPASS
+STEP -down-> FILTER
+
+' Results flow back
+GAIT_CORE -[hidden]right-> STABILITY
+GAIT_GNB -right[hidden]-> STATIC_GNB
+
+' Back to aggregation
+GAIT_GNB -up-> AGGREGATE : "Gait outcomes\n(16 metrics)"
+STATIC_GNB -up-> AGGREGATE : "Static outcomes\n(3 metrics)"
+AGGREGATE -down-> OUTPUT
+
+' ===== NOTES =====
+note right of CORELAYER
+  **Validated algorithms from published**
+  **SincMotion library — zero modifications**
+
+  These core functions implement
+  peer-reviewed signal processing
+  methods for gait & balance
+  assessment from smartphone
+  inertial sensors.
+
+  Key techniques:
+  - Continuous wavelet transform
+  - Inverted pendulum model
+  - Autocorrelation symmetry analysis
+end note
+
+note right of ENTRY
+  **What the streamlined pipeline adds:**
+  1. Automated batch file discovery
+  2. Regex-based metadata extraction
+  3. Participant height auto-lookup
+  4. Smart task routing (gait vs static)
+  5. Per-participant output aggregation
+
+  **What it does NOT change:**
+  All signal processing, gait analysis,
+  and balance algorithms remain exactly
+  as published in the original
+  SincMotion library.
+end note
+
+@enduml

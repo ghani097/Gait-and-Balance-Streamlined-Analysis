@@ -1,0 +1,245 @@
+<h1 id="feasibility-study-methods-and-results">Feasibility Study Methods
+and Results</h1>
+<p>This report summarizes feasibility metrics for the balance study
+using the workbook
+<code>Balance Study_ Feasibility Dec 2024 - March 2025.xlsx</code>.</p>
+<h2 id="methods">Methods</h2>
+<h3 id="data-source">Data Source</h3>
+<ul>
+<li>Source file:
+<code>Balance Study_ Feasibility Dec 2024 - March 2025.xlsx</code>
+(sheet: <code>Data Collection</code>).</li>
+<li>Study date range in the data: 2024-01-23 to 2025-04-04.</li>
+</ul>
+<h3 id="session-definition">Session Definition</h3>
+<ul>
+<li>Each row with a valid <code>Date</code> is treated as one
+session.</li>
+<li>Participant <code>Name</code> is forward-filled within the sheet to
+associate sessions with participants.</li>
+</ul>
+<h3 id="outcomes">Outcomes</h3>
+<ul>
+<li>Attendance: sessions per participant.</li>
+<li>Retention time: days from a participant’s first recorded session to
+their last recorded session.</li>
+<li>Clinic time per session: computed from <code>Test Start Time</code>
+and <code>Test End Time</code> when available;
+<code>Test Duration</code> is used when provided.</li>
+<li>Data completeness: <code>Data Export Y/N</code> and
+<code>Questionnaire Y/N</code> completion rates.</li>
+<li>Recruitment pace: cumulative count of participants by first session
+date.</li>
+<li>Activity trend: weekly count of active participants.</li>
+</ul>
+<h3 id="handling-missing-values">Handling Missing Values</h3>
+<ul>
+<li>Yes/No fields are normalized by first character (Y/N).</li>
+<li>Missing values are excluded from rate denominators when computing
+completion rates.</li>
+</ul>
+<h2 id="results">Results</h2>
+<h3 id="overall-summary">Overall Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Participants</td>
+<td>23</td>
+</tr>
+<tr>
+<td>Total sessions</td>
+<td>155</td>
+</tr>
+<tr>
+<td>Sessions per participant (mean)</td>
+<td>6.74</td>
+</tr>
+<tr>
+<td>Sessions per participant (median)</td>
+<td>6.00</td>
+</tr>
+<tr>
+<td>Sessions per participant (min–max)</td>
+<td>1–12</td>
+</tr>
+<tr>
+<td>Retention days (mean)</td>
+<td>99.3</td>
+</tr>
+<tr>
+<td>Retention days (median)</td>
+<td>91.0</td>
+</tr>
+<tr>
+<td>Retention days (min–max)</td>
+<td>0–422</td>
+</tr>
+</tbody>
+</table>
+<h3 id="clinic-time-per-session">Clinic Time per Session</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value (minutes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sessions with duration available</td>
+<td>154</td>
+</tr>
+<tr>
+<td>Mean duration</td>
+<td>5.8</td>
+</tr>
+<tr>
+<td>Median duration</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>Min–max duration</td>
+<td>4.0–14.0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="data-completeness">Data Completeness</h3>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Total Sessions</th>
+<th>Recorded</th>
+<th>Missing</th>
+<th>Yes</th>
+<th>Yes Rate (Recorded %)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data Export Y/N</td>
+<td>155</td>
+<td>129</td>
+<td>26</td>
+<td>129</td>
+<td>100.0</td>
+</tr>
+<tr>
+<td>Questionnaire Y/N</td>
+<td>155</td>
+<td>155</td>
+<td>0</td>
+<td>103</td>
+<td>66.5</td>
+</tr>
+</tbody>
+</table>
+<h3 id="attendance-top-and-bottom-participants">Attendance (Top and
+Bottom Participants)</h3>
+<p>Top 5 by sessions:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Sessions</th>
+<th>Retention Days</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Colin Robertson</td>
+<td>12</td>
+<td>119</td>
+</tr>
+<tr>
+<td>Rosemary Parsons</td>
+<td>12</td>
+<td>422</td>
+</tr>
+<tr>
+<td>Elaine Brown</td>
+<td>12</td>
+<td>121</td>
+</tr>
+<tr>
+<td>William Sorby</td>
+<td>12</td>
+<td>117</td>
+</tr>
+<tr>
+<td>Margaret Jackson</td>
+<td>11</td>
+<td>117</td>
+</tr>
+</tbody>
+</table>
+<p>Bottom 5 by sessions:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Sessions</th>
+<th>Retention Days</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>David Stewart</td>
+<td>4</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Barbara Bates</td>
+<td>3</td>
+<td>14</td>
+</tr>
+<tr>
+<td>Kay Moors</td>
+<td>2</td>
+<td>49</td>
+</tr>
+<tr>
+<td>Norman Ah Num</td>
+<td>2</td>
+<td>14</td>
+</tr>
+<tr>
+<td>Bruce Dunn</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="trends-and-visuals">Trends and Visuals</h3>
+<p><strong>Figure 1. Sessions per participant.</strong><br />
+<img src="sessions_per_participant.png"
+alt="Sessions per Participant" /></p>
+<p><strong>Figure 2. Retention duration distribution
+(days).</strong><br />
+<img src="retention_days_hist.png" alt="Retention Days Histogram" /></p>
+<p><strong>Figure 3. Weekly active participants.</strong><br />
+<img src="active_participants_weekly.png"
+alt="Active Participants Weekly" /></p>
+<p><strong>Figure 4. Recruitment pace (cumulative
+participants).</strong><br />
+<img src="recruitment_pace.png" alt="Recruitment Pace" /></p>
+<p><strong>Figure 5. Session duration distribution
+(minutes).</strong><br />
+<img src="session_duration_hist.png"
+alt="Session Duration Histogram" /></p>
+<p><strong>Figure 6. Monthly data completeness trends.</strong><br />
+<img src="completeness_monthly.png" alt="Completeness Monthly" /></p>
